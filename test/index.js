@@ -39,6 +39,13 @@ describe('Dawg', function() {
       should.equal(dawg.lookup('barma'), null);
       should.equal(dawg.lookup('fo'), null);
     });
+
+  });
+
+  describe('#lookup(word, false)', function() {
+    it('should search for words in the dictionary that start with a prefix', function() {
+      dawg.lookup('fo', false).should.deep.equal({last: false, edges: {o: {last: true, edges: {}}}});
+    });
   });
 
   describe('#values(node)', function() {

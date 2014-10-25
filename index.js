@@ -67,15 +67,18 @@ Dawg.prototype.insert = function(word, node) {
 
 
 /**
- * Search the dictionary for the given word.
+ * Search the dictionary for the given word or prefix.
  *
  * @param {string} word
+ * @param {Boolean} [exact=true] - Whether to search for an exact or a prefix match.
  * @returns {DawgNode|null} - The leaf node if the word is in the dictionary,
  *   or null otherwise.
  */
-Dawg.prototype.lookup = function(word, node) {
+Dawg.prototype.lookup = function(word, exact, node) {
+  exact = exact === false ? exact : true;
+
   if (!word) {
-    return (node && node.last) ? node : null;
+    return (node && node.last) ? node : (exact ? null : node);
   }
 
   node = node || this.root;
@@ -84,7 +87,7 @@ Dawg.prototype.lookup = function(word, node) {
   if (typeof next == 'undefined') {
     return null;
   } else {
-    return this.lookup(word.slice(1), next)
+    return this.lookup(word.slice(1), exact, next)
   }
 }
 
