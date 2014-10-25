@@ -21,6 +21,7 @@ function init() {
  *   for more information.
  */
 function Dawg() {
+  this.root = new DawgNode();
   return this;
 }
 
@@ -32,6 +33,7 @@ function Dawg() {
  */
 function DawgNode() {
   this.edges = {};
+  this.last = false;
   return this;
 }
 
@@ -40,7 +42,27 @@ function DawgNode() {
  *
  * @param {string} word
  */
-Dawg.prototype.insert = function(word) {
+Dawg.prototype.insert = function(word, node) {
+  if (!word) {
+    node.last = true;
+    return;
+  }
+
+  var letter = word[0],
+      node = node || this.root;
+
+  if (typeof node == 'undefined') {
+    this.root = node = new DawgNode();
+  } else {
+    var edge = node.edges[letter];
+    if (typeof edge == 'undefined') {
+      node.edges[letter] = node = new DawgNode();
+    } else {
+      node = edge;
+    }
+  }
+
+  this.insert(word.slice(1), node);
 }
 
 
@@ -48,6 +70,21 @@ Dawg.prototype.insert = function(word) {
  * Search the dictionary for the given word.
  *
  * @param {string} word
+ * @returns {DawgNode|null} - The leaf node if the word is in the dictionary,
+ *   or null otherwise.
  */
-Dawg.prototype.lookup = function(word) {
+Dawg.prototype.lookup = function(word, node) {
+  if (!word) {
+    return (node && node.last) ? node : null;
+  }
+
+  node = node || this.root;
+  var next = node.edges[word[0]];
+
+  if (typeof next == 'undefined') {
+    return null;
+  } else {
+    return this.lookup(word.slice(1), next)
+  }
+}
 }
