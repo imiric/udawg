@@ -1,6 +1,7 @@
 
 var Dawg = require('..'),
-    should = require('chai').should();
+    should = require('chai').should(),
+    _ = require('lodash');
 
 describe('Dawg', function() {
   var dawg = Dawg();
@@ -22,6 +23,13 @@ describe('Dawg', function() {
       });
 
       dawg.root.should.deep.equal(d.root);
+    });
+
+    it('should not insert duplicate nodes', function() {
+      var before = _.cloneDeep(dawg.root);
+      dawg.insert('foo');
+      dawg.root.should.deep.equal(before);
+      dawg.root = before;
     });
   });
 
