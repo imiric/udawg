@@ -1,0 +1,22 @@
+{
+  "name": "udawg",
+  "version": "0.0.1",
+  "description": "A micro directed acyclic word graph (DAWG) implementation",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imiric/udawg"
+  },
+  "keywords": [
+    "micro",
+    "dawg",
+    "ma-fsa",
+    "data",
+    "structure"
+  ],
+  "author": "Ivan Mirić <imiric@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imiric/udawg/issues"
+  },
+  "homepage": "https://github.com/imiric/udawg"
+}
