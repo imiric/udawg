@@ -6,7 +6,7 @@ describe('Dawg', function() {
   var dawg = Dawg();
   dawg.root = {last: false, edges: {
     f: {last: false, edges: {o: {last: false, edges: {o: {last: true, edges: {}}}}}},
-    b: {last: false, edges: {a: {last: false, edges: {
+    b: {last: false, edges: {a: {last: true, edges: {
       r: {last: true, edges: {}},
       z: {last: true, edges: {}},
     }}}}
@@ -15,7 +15,7 @@ describe('Dawg', function() {
   describe('#insert(word)', function() {
     it('should insert a word in the dictionary', function() {
       var d = Dawg(),
-          words = ['foo', 'bar', 'baz'];
+          words = ['foo', 'ba', 'bar', 'baz'];
 
       words.forEach(function(w) {
         d.insert(w);
@@ -30,6 +30,13 @@ describe('Dawg', function() {
       dawg.lookup('foo').should.deep.equal({last: true, edges: {}});
       should.equal(dawg.lookup('barma'), null);
       should.equal(dawg.lookup('fo'), null);
+    });
+  });
+
+  describe('#values(node)', function() {
+    it('should extract all words contained in the dictionary starting from node', function() {
+      dawg.values(dawg.root).should.deep.equal(['foo', 'ba', 'bar', 'baz']);
+      dawg.values(dawg.root.edges.b).should.deep.equal(['a', 'ar', 'az']);
     });
   });
 });

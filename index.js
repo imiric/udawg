@@ -87,4 +87,36 @@ Dawg.prototype.lookup = function(word, node) {
     return this.lookup(word.slice(1), next)
   }
 }
+
+
+/**
+ * Extract the words contained in the dictionary starting with `node`.
+ *
+ * @param {DawgNode} node
+ * @returns {Array} - The collection of contained words.
+ */
+Dawg.prototype.values = function(node) {
+  if (!node) {
+    return [];
+  }
+
+  var values = [],
+      word = '';
+
+  if (node.last) {
+    values.push(word);
+  }
+
+  for (var letter in node.edges) {
+    var childValues = this.values(node.edges[letter]);
+    if (childValues.length) {
+      childValues.forEach(function(val) {
+        values.push(letter + val);
+      });
+    } else {
+      values.push(word + letter)
+    }
+  }
+
+  return values;
 }
