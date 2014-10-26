@@ -96,15 +96,16 @@ Dawg.prototype.lookup = function(word, exact, node) {
  * Extract the words contained in the dictionary starting with `node`.
  *
  * @param {DawgNode} node
+ * @param {string} [prefix=''] - An optional prefix to add to all located words.
  * @returns {Array} - The collection of contained words.
  */
-Dawg.prototype.values = function(node) {
+Dawg.prototype.values = function(node, prefix) {
   if (!node) {
     return [];
   }
 
   var values = [],
-      word = '';
+      word = prefix || '';
 
   if (node.last) {
     values.push(word);
@@ -114,7 +115,7 @@ Dawg.prototype.values = function(node) {
     var childValues = this.values(node.edges[letter]);
     if (childValues.length) {
       childValues.forEach(function(val) {
-        values.push(letter + val);
+        values.push(word + letter + val);
       });
     } else {
       values.push(word + letter)

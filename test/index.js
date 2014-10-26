@@ -52,6 +52,7 @@ describe('Dawg', function() {
     it('should extract all words contained in the dictionary starting from node', function() {
       dawg.values(dawg.root).should.deep.equal(['foo', 'ba', 'bar', 'baz']);
       dawg.values(dawg.root.edges.b).should.deep.equal(['a', 'ar', 'az']);
+      dawg.values(dawg.root.edges.b, 'b').should.deep.equal(['ba', 'bar', 'baz']);
     });
   });
 });
