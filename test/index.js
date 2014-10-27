@@ -23,7 +23,8 @@ describe('Dawg', function() {
         d.insert(w);
       });
 
-      dawg.root.should.deep.equal(d.root);
+      // TODO: Improve and expand this.
+      d.root.toString().should.equal('0b3c10');
 
       // Test MA-FSA object reuse
       // FIXME: Not working until minimize() is fixed.
