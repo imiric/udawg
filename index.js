@@ -12,6 +12,37 @@ function init() {
 }
 
 
+// Used to keep track of node IDs
+var nextId = 1;
+
+/**
+ * A node in the DAWG.
+ *
+ * @constructor
+ * @private
+ */
+function DawgNode() {
+  this.id = nextId;
+  nextId = nextId + 1;
+  this.edges = {};
+  this.last = false;
+  return this;
+}
+
+/**
+* A unique identifier for this node
+*/
+DawgNode.prototype.toString = function() {
+  var str = this.last ? '1' : '0';
+
+  for (var letter in this.edges) {
+    str = str + letter + this.edges[letter].id;
+  }
+
+  return str;
+}
+
+
 /**
  * A directed acyclic word graph, a.k.a. minimal acyclic finite state automata.
  *
@@ -22,18 +53,8 @@ function init() {
  */
 function Dawg() {
   this.root = new DawgNode();
-  return this;
-}
-
-/**
- * A node in the DAWG.
- *
- * @constructor
- * @private
- */
-function DawgNode() {
-  this.edges = {};
-  this.last = false;
+  this.uncheckedNodes = [];
+  this.minimizedNodes = {};
   return this;
 }
 
@@ -44,7 +65,10 @@ function DawgNode() {
  */
 Dawg.prototype.insert = function(word, node) {
   if (!word) {
-    node.last = true;
+    if (typeof node != 'undefined') {
+      node.last = true;
+    }
+    this.minimize();
     return;
   }
 
@@ -56,7 +80,12 @@ Dawg.prototype.insert = function(word, node) {
   } else {
     var edge = node.edges[letter];
     if (typeof edge == 'undefined') {
-      node.edges[letter] = node = new DawgNode();
+      var next = new DawgNode(), hash = node.toString();
+      this.uncheckedNodes.push([node, letter, next]);
+      node.edges[letter] = next;
+      // Since the edges changed, update the hash if the node is already minimized
+      this.updateHash(hash, node, letter);
+      node = next;
     } else {
       node = edge;
     }
@@ -64,7 +93,6 @@ Dawg.prototype.insert = function(word, node) {
 
   this.insert(word.slice(1), node);
 }
-
 
 /**
  * Search the dictionary for the given word or prefix.
@@ -91,6 +119,33 @@ Dawg.prototype.lookup = function(word, exact, node) {
   }
 }
 
+/**
+ * Minimize the graph by eliminating duplicates
+ */
+Dawg.prototype.minimize = function() {
+  for (var i=this.uncheckedNodes.length - 1; i >= 0; i--) {
+    var e = this.uncheckedNodes[i], paren = e[0], letter = e[1], child = e[2];
+    if (child in this.minimizedNodes) {
+      paren.edges[letter] = this.minimizedNodes[child];
+    } else {
+      this.minimizedNodes[child] = child;
+    }
+    this.uncheckedNodes.pop();
+  }
+}
+
+/**
+ * Update the hash of an existing node in the minimized collection
+ *
+ * @param {string} oldHash
+ * @param {DawgNode} node
+ */
+Dawg.prototype.updateHash = function(oldHash, node) {
+  if (oldHash in this.minimizedNodes) {
+    delete this.minimizedNodes[oldHash];
+    this.minimizedNodes[node] = node;
+  }
+}
 
 /**
  * Extract the words contained in the dictionary starting with `node`.
