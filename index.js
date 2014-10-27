@@ -68,7 +68,8 @@ Dawg.prototype.insert = function(word, node) {
     if (typeof node != 'undefined') {
       node.last = true;
     }
-    this.minimize();
+    // FIXME: Minimizing graph messes up value extraction.
+    //this.minimize();
     return;
   }
 
