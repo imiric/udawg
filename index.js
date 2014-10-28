@@ -76,20 +76,16 @@ Dawg.prototype.insert = function(word, node) {
   var letter = word[0],
       node = node || this.root;
 
-  if (typeof node == 'undefined') {
-    this.root = node = new DawgNode();
+  var edge = node.edges[letter];
+  if (typeof edge == 'undefined') {
+    var next = new DawgNode(), hash = node.toString();
+    this.uncheckedNodes.push([node, letter, next]);
+    node.edges[letter] = next;
+    // Since the edges changed, update the hash if the node is already minimized
+    this.updateHash(hash, node, letter);
+    node = next;
   } else {
-    var edge = node.edges[letter];
-    if (typeof edge == 'undefined') {
-      var next = new DawgNode(), hash = node.toString();
-      this.uncheckedNodes.push([node, letter, next]);
-      node.edges[letter] = next;
-      // Since the edges changed, update the hash if the node is already minimized
-      this.updateHash(hash, node, letter);
-      node = next;
-    } else {
-      node = edge;
-    }
+    node = edge;
   }
 
   this.insert(word.slice(1), node);
